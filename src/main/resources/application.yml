@@ -1,0 +1,150 @@
+server:
+  port: 8081
+---
+spring:
+  application:
+    name: gateway-service
+  profiles:
+    active: ${PROFILE_ACTIVE:local}
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      routes:
+        - id: authentication-service
+          uri: http://authentication.fec.bot.internal:8080
+          predicates:
+            - Path=/authentication/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authenticationFallback
+                fallbackUri: forward:/fallback-authentication
+            - name: Retry
+              args:
+                retries: 3
+                statuses:
+                  - BAD_GATEWAY
+                  - SERVICE_UNAVAILABLE
+                methods:
+                  - GET
+                  - POST
+
+        - id: document-service
+          uri: http://document.fec.bot.internal:8080
+          predicates:
+            - Path=/document/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: documentFallback
+                fallbackUri: forward:/fallback-document
+            - name: Retry
+              args:
+                retries: 3
+                statuses:
+                  - BAD_GATEWAY
+                  - SERVICE_UNAVAILABLE
+                methods:
+                  - GET
+                  - POST
+
+        - id: bot-management-service
+          uri: http://bot-management.fec.bot.internal:8080
+          predicates:
+            - Path=/management/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: botManagementFallback
+                fallbackUri: forward:/fallback-bot-management
+            - name: Retry
+              args:
+                retries: 3
+                statuses:
+                  - BAD_GATEWAY
+                  - SERVICE_UNAVAILABLE
+                methods:
+                  - GET
+                  - POST
+---
+security:
+  public-key: -----BEGIN PUBLIC KEY----- MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuakHBgwiKwyK3tb2XvLD wpcLFuxQTz8/2Ti4wsBngb58CGwpXCD2TRFmI2ISDsP25qifO7vvzdmPjvQwg8DM Wr4hcNAhmuaYNeu6FY+T4NVdlk2zte9BPyU2YMjB6j+YjaKsrjH56RV4eOQoosRa 8z9Ez9nT4NblcNyAiHH2BN72ClWx1EcCuJ2AO1qysUfNJrPeLv6BJQSQ3J/+86wq DFfJh2Fe2J7m7cQPkCs3IKDbbDrZQOiuIw6wicVdSbDRwdbapBul98t927hLzoFd GCHlfGgoExKjVH+pc+JK4ZZ3e987AuJcs7Ka4GCvb/kzNcnb4fIlhXXa/lV21t8S lwIDAQAB -----END PUBLIC KEY-----
+  service-key: 11ecde83-1597-454b-91c6-db37b4dc1156
+---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # Expose all endpoints (e.g., health, metrics, etc.)
+  endpoint:
+    health:
+      show-details: always # Show detailed health information
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: gateway-service
+---
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+    instances:
+      authenticationFallback:
+        baseConfig: default
+      documentFallback:
+        baseConfig: default
+      botManagementFallback:
+        baseConfig: default
+
+  retry:
+    instances:
+      authenticationFallback:
+        maxAttempts: 3
+        waitDuration: 2s
+      documentFallback:
+        maxAttempts: 3
+        waitDuration: 2s
+      botManagementFallback:
+        maxAttempts: 3
+        waitDuration: 2s
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+
+      - url: /authentication/v3/api-docs
+        name: AUTHENTICATION-SERVICE
+        display-name: Authentication Service Document Api
+
+      - url: /document/v3/api-docs
+        name: DOCUMENT-SERVICE
+        display-name: Document Service Document Api
+
+      - url: /management/v3/api-docs
+        name: BOT-MANAGEMENT-SERVICE
+        display-name: Bot Management Service Document Api
