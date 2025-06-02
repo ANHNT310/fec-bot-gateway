@@ -1,4 +1,4 @@
-package com.fec.bpm.gatewayservice.component;
+package com.fec.bot.gateway.component;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.server.reactive.ServerHttpRequest;

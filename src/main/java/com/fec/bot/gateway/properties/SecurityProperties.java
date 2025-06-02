@@ -1,4 +1,4 @@
-package com.fec.bpm.gatewayservice.properties;
+package com.fec.bot.gateway.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

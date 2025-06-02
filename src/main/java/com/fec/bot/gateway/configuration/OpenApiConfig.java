@@ -1,4 +1,4 @@
-package com.fec.bpm.gatewayservice.configuration;
+package com.fec.bot.gateway.configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;

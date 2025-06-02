@@ -1,9 +1,9 @@
-package com.fec.bpm.gatewayservice.common.dtos;
+package com.fec.bot.gateway.common.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fec.bpm.gatewayservice.common.enums.ApplicationMessage;
-import com.fec.bpm.gatewayservice.exception.ApplicationException;
+import com.fec.bot.gateway.common.enums.ApplicationMessage;
+import com.fec.bot.gateway.exception.ApplicationException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;

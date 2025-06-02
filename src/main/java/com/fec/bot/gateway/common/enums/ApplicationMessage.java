@@ -1,4 +1,4 @@
-package com.fec.bpm.gatewayservice.common.enums;
+package com.fec.bot.gateway.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

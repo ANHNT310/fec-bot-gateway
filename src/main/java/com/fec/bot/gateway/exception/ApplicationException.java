@@ -1,8 +1,8 @@
-package com.fec.bpm.gatewayservice.exception;
+package com.fec.bot.gateway.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fec.bpm.gatewayservice.common.dtos.BaseResponse;
-import com.fec.bpm.gatewayservice.common.enums.ApplicationMessage;
+import com.fec.bot.gateway.common.dtos.BaseResponse;
+import com.fec.bot.gateway.common.enums.ApplicationMessage;
 import lombok.Getter;
 
 import java.util.Objects;

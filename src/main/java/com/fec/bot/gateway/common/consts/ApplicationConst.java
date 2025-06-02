@@ -1,4 +1,4 @@
-package com.fec.bpm.gatewayservice.common.consts;
+package com.fec.bot.gateway.common.consts;
 
 public class ApplicationConst {
 
